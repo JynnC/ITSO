@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='search.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box" style="width: 700px; height: 30px; padding-left: 40px; border: 1px solid #ccc; font-size: 12px; outline: none; border-radius: 20px; margin-top: 0;">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] }}{{ profile.last_name[0] }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name}}</p>
+                <p class="user-title">Coordinator</p>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"> 
+                    <a href="{{ url_for('dashboard')}}">
+                        <img src="{{ url_for('static', filename='dashboard.png') }}" alt="Document Icon" class="nav-icon">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint in ['encode', 'documents', 'upload', 'preview'] else '' }}">
+                    <a href="{{ url_for('encode')}}">
+                        <img src="{{ url_for('static', filename='encode.png') }}" alt="Encode Icon" class="nav-icon">
+                        Encode
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'tables' else '' }}">
+                    <a href="{{ url_for('tables')}}">
+                        <img src="{{ url_for('static', filename='table.png') }}" alt="Tables Icon" class="nav-icon">
+                        Document List
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'report' else '' }}">
+                    <a href="{{ url_for('report')}}">
+                        <img src="{{ url_for('static', filename='report.png') }}" alt="Report Icon" class="nav-icon">
+                        Generate Report
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'user' else '' }}">
+                    <a href="{{ url_for('user')}}">
+                        <img src="{{ url_for('static', filename='user.png') }}" alt="User Icon" class="nav-icon">
+                        User Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+
+    <section class="document-header">
+        <h2>Document Registration</h2>
+        <div class="document-buttons">
+            <button class="add-document">Add New Document</button>
+            <button class="upload-document">Upload Document</button>
+        </div>
+    </section>
+
+    <div class="main-content">
+        <aside class="step-sidebar">
+            <h3>New Document</h3>
+            <p>Encode information here</p>
+            <ul class="steps">
+                <li class="active">
+                    <div class="step-circle">✔</div>Personal Details
+                </li>
+
+                <li class="active">
+                    <div class="step-circle">✔</div> Document Details
+                </li>
+
+                <li class="active">
+                    <div class="step-circle">3</div> Upload Files
+                </li>
+
+                <li>
+                    <div class="step-circle">4</div> Submit
+                </li>
+            </ul>
+        </aside>
+
+        <div class="form-container">
+            <h2>Upload Files</h2>
+            <p>Upload the important files here</p>
+            <form method="post" action="/upload" enctype="multipart/form-data">
+                <div class="file-container">
+
+                    <button type="button" id="add-more-file">Add More File</button>
+
+                    <label for="filename">File Name</label>
+                    <input type="text" name="filename[]" placeholder="Enter File Name">
+
+                    <label for="destination">Select Destination</label>
+                    <select name="destination[]" required>
+                        <option value="" disabled selected>Select Destination</option>
+                        <option value="Copyright">Copyright</option>
+                        <option value="Trademark">Trademark</option>
+                        <option value="Patent">Patent</option>
+                        <option value="Model">Utility Model</option>
+                        <option value="Design">Industrial Design</option>
+                    </select>
+
+                    <label for="file">Upload File</label>
+                    <div class="drag-drop">
+                        <p>Drag and Drop file here or <span class="browse-text">Browse Files</span></p>
+                        <input type="file" name="file[]" class="file-input" multiple required>
+                        <div class="file-display"></div>
+                    </div>
+                    <hr>
+
+                    <label for="filename">File Name</label>
+                    <input type="text" name="filename[]" placeholder="Enter File Name">
+
+                    <label for="destination">Select Destination</label>
+                    <select name="destination[]" required>
+                        <option value="" disabled selected>Select Destination</option>
+                        <option value="Copyright">Copyright</option>
+                        <option value="Trademark">Trademark</option>
+                        <option value="Patent">Patent</option>
+                        <option value="Model">Utility Model</option>
+                        <option value="Design">Industrial Design</option>
+                    </select>
+
+                    <label for="file">Upload File</label>
+                    <div class="drag-drop">
+                        <p>Drag and Drop file here or <span class="browse-text">Browse Files</span></p>
+                        <input type="file" name="file[]" class="file-input" multiple required>
+                        <div class="file-display"></div>
+                    </div>
+                    <hr>
+                </div>
+
+                <div class="form-buttons">
+                    <a href="{{ url_for('documents') }}" class="back-btn">Back</a>
+                    <button type="submit" class="next-btn">Next</button>
+                </div>
+                </div>
+            </form>
+        </div>
+
+<script src="{{ url_for('static', filename='upload.js')}}"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Verification Pending</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: #1666BA;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        
+        .logo img {
+            height: 50px;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-info p {
+            margin: 0;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-role {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .verification-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .verification-card img {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        
+        .verification-card h1 {
+            color: #1666BA;
+            margin-bottom: 20px;
+        }
+        
+        .verification-card p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .logout-btn {
+            background-color: #1666BA;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: #124e8e;
+        }
+    </style>
+    <script>
+        function handleImageError(img) {
+            img.onerror = null; // Prevent infinite loop
+            img.src = "{{ url_for('static', filename='ITSO_LOGO.png') }}";
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png') }}" alt="ITSO-RMS Logo">
+        </div>
+        <div class="user-info">
+            <p class="user-name">{{ user.full_name }}</p>
+            <p class="user-role">{{ user.role|capitalize }}</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="verification-card">
+            <img src="{{ url_for('static', filename='verification_pending.png') }}" 
+                 alt="Verification Pending" 
+                 onError="handleImageError(this)">
+            <h1>Account Verification Pending</h1>
+            <p>
+                Thank you for registering with the ITSO Records Management System. Your account is currently
+                pending verification by an administrator. Once your account is verified, you will have full 
+                access to the system features.
+            </p>
+            <p>
+                Please check back later or contact the system administrator if you believe this is an error.
+            </p>
+            <a href="{{ url_for('logout') }}">
+                <button class="logout-btn">Logout</button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

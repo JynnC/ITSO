@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js')}}"></script>
+
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='filter.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] }}{{ profile.last_name[0] }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name}}</p>
+                <p class="user-title">Coordinator</p>
+            </div>
+        </div>
+    </header>
+
+    
+
+</body>
+</html>

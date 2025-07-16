@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='report.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
+</head>
+<body>
+
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='search.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] if profile and profile.first_name else '' }}{{ profile.last_name[0] if profile and profile.last_name else '' }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name }}</p>
+                <p class="user-title">{{ profile['role'] }}</p>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"> 
+                    <a href="{{ url_for('dashboard')}}">
+                        <img src="{{ url_for('static', filename='dashboard.png') }}" alt="Document Icon" class="nav-icon">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'encode' else '' }}">
+                    <a href="{{ url_for('encode')}}">
+                        <img src="{{ url_for('static', filename='encode.png') }}" alt="Encode Icon" class="nav-icon">
+                        IP Application
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'tables' else '' }}">
+                    <a href="{{ url_for('tables')}}">
+                        <img src="{{ url_for('static', filename='table.png') }}" alt="Tables Icon" class="nav-icon">
+                        Intellectual Property
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'report' else '' }}">
+                    <a href="{{ url_for('report')}}">
+                        <img src="{{ url_for('static', filename='report.png') }}" alt="Report Icon" class="nav-icon">
+                        IP Reports
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'user' else '' }}">
+                    <a href="{{ url_for('user')}}">
+                        <img src="{{ url_for('static', filename='user.png') }}" alt="User Icon" class="nav-icon">
+                        User Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="report-main">
+        <section class="report-filters">
+            <h2>Generate Report</h2>
+            {% if user_role == 'Admin' %}
+            <div class="filter-controls">
+                <select id="department" class="filter-select">
+                    <option value="All">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}">{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div class="button-group">
+                <button class="export-btn" id="exportWordBtn">Export Word</button>
+            </div>
+        </section>
+
+        <section class="report-summary">
+            <table id="reportTable">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Total Submitted</th>
+                        <th>Total Expired</th>
+                        <th>Approved</th>
+                        <th>Pending</th>
+                        <th>Rejected</th>
+                        <th>Approval Rate</th>
+                        <th>Rejection Rate</th>
+                        <th>Avg. Processing Time (A)</th>
+                        <th>Avg. Processing Time (R)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.total_documents }}</td>
+                        <td>{{ category.expired_documents }}</td>
+                        <td>{{ category.approved }}</td>
+                        <td>{{ category.pending }}</td>
+                        <td>{{ category.rejected }}</td>
+                        <td>{{ category.approval_rate }}%</td>
+                        <td>{{ category.rejection_rate }}%</td>
+                        <td>{{ category.avg_processing_time_approved }} days</td>
+                        <td>{{ category.avg_processing_time_rejected }} days</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    
+        <section class="report-charts">
+            <div class="chart-row">
+                <div class="chart-box" id="lineChart-container">
+                    <label>Average Approval and Rejection Rate</label>
+                    <canvas id="lineChart"></canvas>
+                </div>
+                <div class="chart-box" id="pieChart-container">
+                    <label>Document Status</label>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {% if chart_data %}
+    <script id="chart-data" type="application/json">
+        {{ chart_data | tojson | safe }}
+    </script>
+    {% endif %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+
+
+    <script src="{{ url_for('static', filename='report.js') }}"></script>
+
+
+</body>
+</html>

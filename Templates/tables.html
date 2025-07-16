@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='table.css') }}">
+    <script src="{{ url_for('static', filename='tables.js')}}"></script>
+    <style>
+        .department-indicator {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .admin-badge {
+            background-color: #1666BA;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='search.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] }}{{ profile.last_name[0] }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name}}</p>
+                <p class="user-title">{{ 'Admin' if is_admin else 'Coordinator' }}</p>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"> 
+                    <a href="{{ url_for('dashboard')}}">
+                        <img src="{{ url_for('static', filename='dashboard.png') }}" alt="Document Icon" class="nav-icon">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'encode' else '' }}">
+                    <a href="{{ url_for('encode')}}">
+                        <img src="{{ url_for('static', filename='encode.png') }}" alt="Encode Icon" class="nav-icon">
+                        IP Application
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'tables' else '' }}">
+                    <a href="{{ url_for('tables')}}">
+                        <img src="{{ url_for('static', filename='table.png') }}" alt="Tables Icon" class="nav-icon">
+                        Intellectual Property
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'report' else '' }}">
+                    <a href="{{ url_for('report')}}">
+                        <img src="{{ url_for('static', filename='report.png') }}" alt="Report Icon" class="nav-icon">
+                        IP Reports
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'user' else '' }}">
+                    <a href="{{ url_for('user')}}">
+                        <img src="{{ url_for('static', filename='user.png') }}" alt="User Icon" class="nav-icon">
+                        User Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <div class="table-container">
+        <div class="table-header">
+            <h2>Research Document List</h2>
+            <button class="register-btn">Register Document</button>
+        </div>
+        <p class="overview">Submitted Documents Overview</p>
+        {% if user_role == 'Coordinator' and user_department %}
+        {% endif %}
+
+        <div class="filters">
+            <label for="status">Status</label>
+            <select id="status" onchange="applyFilters()">
+                <option value="all" {% if selected_status == 'all' %}selected{% endif %}>All</option>
+                <option value="Approved" {% if selected_status == 'Approved' %}selected{% endif %}>Approved</option>
+                <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Rejected" {% if selected_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+
+            <label for="category">Category:</label>
+            <select id="category" itemref="category" onchange="applyFilters()">
+                <option value="all" {% if selected_category == 'all' %}selected{% endif %}>All</option>
+                {% for category in categories %}
+                    <option value="{{ category.category }}" {% if selected_category == category.category %}selected{% endif %}>{{ category.category }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="department">Department</label>
+            <select id="department" onchange="applyFilters()">
+                <option value="all" {% if selected_department == 'all' %}selected{% endif %}>All</option>
+                {% for department in departments %}
+                    <option value="{{ department }}" {% if selected_department == department %}selected{% endif %}>{{ department }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            {% if documents %}
+                <table class="document-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Document Title</th>
+                            <th>Category</th>
+                            <th>Department</th>
+                            <th>Authors</th>
+                            <th>Status</th>
+                            <th>Submission Date</th>
+                            <th>Expiration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document in documents %}
+                            <tr>
+                                <td>{{ document.id }}</td>
+                                <td>{{ document.title }}</td>
+                                <td>{{ document.category }}</td>
+                                <td>{{ document.department}}</td>
+                                <td>{{ document.authors }}</td>
+                                <td>
+                                    <select class="status-dropdown">
+                                        <option value="Pending" {% if document.status == 'Pending' %} selected {% endif %}>🟡 Pending</option>
+                                        <option value="Approved" {% if document.status == 'Approved' %} selected {% endif %}>🟢 Approved</option>
+                                        <option value="Rejected" {% if document.status == 'Rejected' %} selected {% endif %}>🔴 Rejected</option>
+                                    </select>
+                                </td>
+                                <td>{{ document.submission_date }}</td>
+                                <td>{{ document.expiration_date }}</td>
+                                <td>
+                                    <img src="{{ url_for('static', filename='edit.png')}}" alt="Edit" class="action-icon edit-icon" data-document-id="{{ document.id }}">
+                                    <img src="{{ url_for('static', filename='delete.png')}}" alt="Delete" class="action-icon delete-icon" data-document-id="{{ document.id }}">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-documents" style="padding: 20px; text-align: center; background-color: #f9f9f9; border-radius: 4px; margin-top: 20px;">
+                    <h3>No documents found</h3>
+                    <p>No documents match your current filters or are available for your department.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="edit-document-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal">&times;</span>
+                <h2>Edit Document</h2>
+            </div>
+            <div class="modal-body">
+                <form id="edit-document-form">
+                    <div class="form-group">
+                        <label for="edit-title">Document Title:</label>
+                        <input type="text" id="edit-title" name="title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-category">Category:</label>
+                        <select id="edit-category" name="category" required>
+                            <option value="Copyright">Copyright</option>
+                            <option value="Patent">Patent</option>
+                            <option value="Trademark">Trademark</option>
+                            <option value="Utility Model">Utility Model</option>
+                            <option value="Industrial Design">Industrial Design</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-department">Department:</label>
+                        <select id="edit-department" name="department" required>
+                            {% for department in departments %}
+                                <option value="{{ department }}">{{ department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-authors">Authors:</label>
+                        <input type="text" id="edit-authors" name="authors" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-status">Status:</label>
+                        <select id="edit-status" name="status" required>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-submission-date">Submission Date:</label>
+                        <input type="date" id="edit-submission-date" name="submission_date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-expiration-date">Expiration Date:</label>
+                        <input type="date" id="edit-expiration-date" name="expiration_date">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="cancel-btn close-modal">Cancel</button>
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

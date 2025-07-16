@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='view.css') }}">
+
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='search.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] }}{{ profile.last_name[0] }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name}}</p>
+                <p class="user-title">Coordinator</p>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"> 
+                    <a href="{{ url_for('dashboard')}}">
+                        <img src="{{ url_for('static', filename='dashboard.png') }}" alt="Document Icon" class="nav-icon">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'encode' else '' }}">
+                    <a href="{{ url_for('encode')}}">
+                        <img src="{{ url_for('static', filename='encode.png') }}" alt="Encode Icon" class="nav-icon">
+                        Encode
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'tables' else '' }}">
+                    <a href="{{ url_for('tables')}}">
+                        <img src="{{ url_for('static', filename='table.png') }}" alt="Tables Icon" class="nav-icon">
+                        Document List
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'report' else '' }}">
+                    <a href="{{ url_for('report')}}">
+                        <img src="{{ url_for('static', filename='report.png') }}" alt="Report Icon" class="nav-icon">
+                        Generate Report
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'user' else '' }}">
+                    <a href="{{ url_for('user')}}">
+                        <img src="{{ url_for('static', filename='user.png') }}" alt="User Icon" class="nav-icon">
+                        User Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>{{ document.title }}</h1>
+            
+            <div class="document-info">
+                <p><strong>Category:</strong> {{ document.category }}</p>
+                <p><strong>Authors:</strong> {{ document.authors }}</p>
+                <p><strong>Status:</strong> <span class="status-{{ document.status|lower }}">{{ document.status }}</span></p>
+                <p><strong>Submission Date:</strong> {{ document.submission_date }}</p>
+                {% if document.expiration_date %}
+                <p><strong>Expiration Date:</strong> {{ document.expiration_date }}</p>
+                {% endif %}
+            </div>
+
+            <div class="document-viewer">
+                {% if document.file_path %}
+                    {% set filename = document.file_path.split(',')[0] %}
+                    {% set lowercase_path = filename.lower() %}
+                    
+                    {% if lowercase_path.endswith('.pdf') %}
+                        <iframe src="{{ url_for('serve_document', filename=filename) }}" 
+                                width="100%" 
+                                height="600px">
+                        </iframe>
+                    {% else %}
+                        <div class="file-preview">
+                            <p>Document preview not available. Download the file instead.</p>
+                            <a href="{{ url_for('serve_document', filename=filename) }}" 
+                            class="download-btn" download>
+                                Download Document
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="no-document">No document file attached</p>
+                {% endif %}
+            </div>
+
+            <div class="document-actions">
+                <a href="{{ url_for('tables') }}" class="btn btn-back">Back to List</a>
+                <form action="{{ url_for('reject_document', document_id=document.id) }}" method="POST">
+                    <button type="submit" class="btn btn-reject">Reject</button>
+                </form>
+                <form action="{{ url_for('approve_document', document_id=document.id) }}" method="POST">
+                    <button type="submit" class="btn btn-approve">Approve</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

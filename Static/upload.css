@@ -1,0 +1,509 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+}
+
+body {
+    background-color: #DEECFB;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #DEECFB;
+    padding: 5px 5px;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.header-left .logo {
+    height: 40px;
+    margin-left: 20px;
+}
+
+.header-center {
+    position: relative;
+    width: 100%;
+ 
+    margin-left: 200px;
+    margin-right: auto;
+}
+
+.filter-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.search-box {
+    width: 700px;
+    height: 30px;
+    padding-left: 40px;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    outline: none;
+    border-radius: 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    padding-right: 30px;
+}
+
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-btn {
+    border: none;
+    background-color: none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+}
+
+.profile-btn:focus {
+    outline: none;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 1;
+    margin-top: 5px;
+}
+
+.dropdown-content a{
+    color: #333;
+    padding: 8px 12px;
+    text-decoration: none;
+    display: block;
+    font-size: 12px;
+}
+
+.profile-dropdown:hover {
+    background-color: #f1f1f1;
+    color: #1666BA;
+}
+
+.profile-avatar:hover .dropdown-content {
+    display: block;
+}
+
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.user-title {
+    font-size: 12px;
+    color: gray;
+}
+
+.sidebar {
+    width: 250px;
+    height: calc(100vh - 70px);
+    background-color: #DEECFB;
+    padding:  80px 20px 20px;
+    position: fixed;
+    top: 70px;
+    left: 0; 
+    align-items: center;
+}
+
+.sidebar nav ul {
+    list-style: none;
+}
+
+.sidebar nav ul li {
+    padding: 5px 0px;
+    margin-bottom: 50px;
+    margin-top: -30px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.sidebar nav ul li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 3px;
+}
+
+.sidebar nav ul li.active a {
+    color: white;
+    font-weight: 600;
+}
+
+.sidebar nav ul li.active, .sidebar nav ul li:hover {
+    background-color: #1666BA;
+    color: white;
+}
+
+.nav-icon {
+    width: 15px;
+    height: 15px;
+    margin-right: 10px;
+    vertical-align: middle;
+    transition: filter 0.3s ease-in-out;
+}
+
+li:hover .nav-icon {
+    filter: invert(1);
+}
+
+li.active .nav-icon {
+    filter: invert(1);
+}
+
+.document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1666BA;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-left: 270px;
+    margin-right: 35px;
+    margin-top: 0;
+}
+
+.document-header h2 {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.document-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.add-document {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 2px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.add-document:hover {
+    background: white;
+    color: #1666BA;
+    border: 1px solid #1666BA;
+    transition: all 0.3s ease-in-out;
+}
+
+.upload-document {
+    background: #FF8C42;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.upload-document:hover {
+    background: #FFA366;
+    transition: background 0.3s ease-in-out;
+}
+
+.main-content {
+    display: flex;
+    padding: 20px;
+    margin-left: 250px;
+    height: calc(100vh - 120px);
+    overflow: hidden;
+}
+
+.step-sidebar {
+    width: 25%;
+    background: #c2ddfb;
+    padding: 20px;
+    border-radius: 8px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.step-sidebar h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.step-sidebar p {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.steps {
+    list-style: none;
+    padding: 0;
+    position: relative;
+}
+
+.steps::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #1666BA;
+}
+
+.steps li {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 60px;
+    font-size: 12px;
+    font-weight: 500;
+    color: black;
+}
+
+.steps li .step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #1666BA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #1666BA;
+    margin-right: 10px;
+}
+
+.steps li.active .step-circle {
+    background:#1666BA;
+    color: white;
+    font-size: 12px;
+    font-weight: bold; 
+}
+
+.steps li.active {
+    color: black;
+    font-weight: 600;
+}
+
+.form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 910px;
+    margin-left: 20px;
+    height: 100%;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 15px;
+}
+
+.form-container h2 {
+    color: #1666BA;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.form-container p {
+    font-size: 12px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: black;
+    margin-top: 15px;
+    font-size: 10px;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 10px;
+}
+
+.file-display {
+    margin-top: 8px;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    min-height: 20px;
+}
+
+.file-display ul {
+    padding-left: 20px;
+    margin: 5px 0;
+}
+
+.drag-drop {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 5px;
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+.drag-drop p {
+    color: black;
+    font-size: 10px;
+}
+
+.drag-drop .browse-text {
+    color: #1666BA;
+    cursor: pointer;
+}
+
+.drag-drop.active {
+    border-color: #1666BA;
+}
+
+hr {
+    margin-top: 10px;
+    border: none;
+    border-top: 1px solid #ccc;
+    margin-bottom: 0;
+}
+
+input.file-input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+#add-more-file{
+    background-color: #1666BA;
+    color: white;
+    border: none;
+    padding: 9px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    margin-top: 15px;
+    width: 100%;
+    text-align: center;
+}
+
+#add-more-file:hover {
+    background: #2064ac;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.back-btn, .next-btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+}
+
+.back-btn {
+    background-color: #999;
+    border: none;
+}
+
+.back-btn:hover {
+    background-color: #777;
+}
+
+.next-btn {
+    background:#1666BA;
+    cursor: pointer;
+    border: none;
+}
+
+.next-btn:hover {
+    background: #295c93;
+}
+
+.file-upload-set {
+    margin-bottom: 20px;
+    padding: 10px;
+    position: relative;
+}
+
+.remove-file-set {
+    background: none;
+    color: red;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+    <script src="{{ url_for('static', filename='register.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-image">
+            <div class="logoregister">
+                <img src="{{ url_for('static', filename='ITSO_LOGO.png')}}" alt="Register Logo">
+            </div>
+            <img src="{{ url_for('static', filename='illustration.png')}}" alt="Register illustration">
+        </div>
+        
+        <div class="register-form">
+            <h2>Welcome!</h2>
+            <p>Create your Account now</p>
+
+            <form action="{{ url_for('register') }}" method="post">
+                <label for="role">Register As</label>
+                <select id="role" name="role" required>
+                    <option value="coordinator">Coordinator</option>
+                </select>
+
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullname" required>
+
+                <label for="email">Username or Email</label>
+                <input type="text" id="email" name="email" required>
+
+                <label for="department">Department</label>
+                <select id="department" name="department" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="College of Arts and Sciences">College of Arts and Sciences</option>
+                    <option value="College of Business, Administration & Accountancy">College of Business, Administration & Accountancy</option>
+                    <option value="College of Computer Studies">College of Computer Studies</option>
+                    <option value="College of Criminal Justice Education">College of Criminal Justice Education</option>
+                    <option value="College of Fisheries">College of Fisheries</option>
+                    <option value="College of Food Nutrition and Dietetics">College of Food Nutrition and Dietetics</option>
+                    <option value="College of Hospitality Management & Tourism">College of Hospitality Management & Tourism</option>
+                    <option value="College of Teacher Education">College of Teacher Education</option>
+                </select>
+
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required>
+                    <span class="toggle-password" onclick="togglePassword('password')">
+                        <i class="fas fa-eye eye-icon"></i>
+                    </span>
+                </div>
+
+                <label for="confirm-password">Confirm Password</label>
+                <div class="password-container">
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                    <span class="toggle-password" onclick="togglePassword('confirm-password')">
+                        <i class="fas fa-eye eye-icon"></i>
+                    </span>
+                </div>
+            
+                <div class="terms-container">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms and Conditions</a></label>
+                </div>
+
+                <button type="submit" class="register-btn">Create Account</button>
+            </form>
+            
+            <div class="signin-text">
+                <p class="signin-text">Already have an Account? <a href="{{ url_for('login') }}">Sign in now</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

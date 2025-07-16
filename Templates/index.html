@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js')}}"></script>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='search.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] }}{{ profile.last_name[0] }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name}}</p>
+                <p class="user-title">{{ 'Admin' if is_admin else 'Coordinator' }}</p>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"> 
+                    <a href="{{ url_for('dashboard')}}">
+                        <img src="{{ url_for('static', filename='dashboard.png') }}" alt="Document Icon" class="nav-icon">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'encode' else '' }}">
+                    <a href="{{ url_for('encode')}}">
+                        <img src="{{ url_for('static', filename='encode.png') }}" alt="Encode Icon" class="nav-icon">
+                        IP Application
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'tables' else '' }}">
+                    <a href="{{ url_for('tables')}}">
+                        <img src="{{ url_for('static', filename='table.png') }}" alt="Tables Icon" class="nav-icon">
+                        Intellectual Property
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'report' else '' }}">
+                    <a href="{{ url_for('report')}}">
+                        <img src="{{ url_for('static', filename='report.png') }}" alt="Report Icon" class="nav-icon">
+                        IP Reports
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'user' else '' }}">
+                    <a href="{{ url_for('user')}}">
+                        <img src="{{ url_for('static', filename='user.png') }}" alt="User Icon" class="nav-icon">
+                        User Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <div class="top-section">
+            <section class="greeting">
+                <h1>Hello, {{ full_name }}!</h1>
+                {% if is_admin %}
+                    <p>You are viewing analytics for all departments</p>
+                {% else %}
+                    <p>You are viewing analytics for {{ user_department }}</p>
+                {% endif %}
+            </section>
+
+            <div class="filter-add-container">
+                <a href="{{ url_for('encode') }}" class="add-document">Add Document</a>
+            </div>
+        </div>
+
+        <section class="analytics-overview">
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="circle circle-copyright"></div>
+                    <h4>Copyrights</h4>
+                    <p><span>{{ document_counts.get('Copyright', 0) }}</span> Copies </p>
+                </div>
+                <div class="analytics-card">
+                    <div class="circle circle-patent"></div>
+                    <h4>Patent</h4>
+                    <p><span>{{ document_counts.get('Patent', 0) }}</span> Copies </p>
+                </div>
+                <div class="analytics-card">
+                    <div class="circle circle-trademark"></div>
+                    <h4>Trademark</h4>
+                    <p><span>{{ document_counts.get('Trademark', 0) }}</span> Copies </p>
+                </div>
+                <div class="analytics-card">
+                    <div class="circle circle-model"></div>
+                    <h4>Utility Model</h4>
+                    <p><span>{{ document_counts.get('Utility Model', 0) }}</span> Copies </p>
+                </div>
+                <div class="analytics-card">
+                    <div class="circle circle-design"></div>
+                    <h4>Industrial Design</h4>
+                    <p><span>{{ document_counts.get('Industrial Design', 0) }}</span> Copies </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Restructured horizontal section: Bar chart and Recent Activities side by side -->
+        <div class="horizontal-section">
+            <div class="chart-section">
+                <h2>Documents Encoded Per Month</h2>
+                <canvas id="documentsChart"></canvas>
+            </div>
+
+            <section class="recent-activities">
+                <h2>Recent Activities</h2>
+                <ul class="activity-list">
+                    {% if recent_activities %}
+                        {% for activity in recent_activities %}
+                            <li>
+                                <div class="activity-info">
+                                    <div class="activity-user">{{ activity.full_name }}</div>
+                                    <div class="activity-text">{{ activity.activity}}</div>
+                                    <div class="activity-time">{{ activity.timestamp.strftime('%b %d, %I:%M %p') }}</div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>No recent activities</li>
+                    {% endif %}
+                </ul>
+            </section>
+        </div>
+
+        <!-- Added new department-based document table section -->
+        <section class="department-documents-section">
+            <h2>
+                {% if is_admin %}
+                    Documents Submitted by Department
+                {% else %}
+                    Documents Submitted by your Department
+                {% endif %}
+            </h2>
+            <div class="table-wrapper">
+                <table class="department-table">
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Copyrights</th>
+                            <th>Patents</th>
+                            <th>Trademarks</th>
+                            <th>Utility Models</th>
+                            <th>Industrial Designs</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if department_documents %}
+                            {% for dept in department_documents %}
+                            <tr>
+                                <td>{{ dept.name }}</td>
+                                <td>{{ dept.counts.get('Copyright', 0) }}</td>
+                                <td>{{ dept.counts.get('Patent', 0) }}</td>
+                                <td>{{ dept.counts.get('Trademark', 0) }}</td>
+                                <td>{{ dept.counts.get('Utility Model', 0) }}</td>
+                                <td>{{ dept.counts.get('Industrial Design', 0) }}</td>
+                                <td>{{ dept.total }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="no-data">No department data available</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

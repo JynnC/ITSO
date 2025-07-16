@@ -1,0 +1,52 @@
+[
+    {
+      "code": "PH-00",
+      "name": "Metro Manila",
+      "regionCode": "NCR",
+      "cities": [
+        {
+          "code": "PH-00-MM-QC",
+          "name": "Quezon City",
+          "barangays": [
+            { "code": "BR001", "name": "Bagong Lipunan ng Crame" },
+            { "code": "BR002", "name": "Bahay Toro" },
+            { "code": "BR003", "name": "Balingasa" }
+          ]
+        },
+        {
+          "code": "PH-00-MM-MN",
+          "name": "Manila",
+          "barangays": [
+            { "code": "BR101", "name": "Barangay 101" },
+            { "code": "BR102", "name": "Barangay 287" },
+            { "code": "BR103", "name": "Barangay 836" }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "PH-LAG",
+      "name": "Laguna",
+      "regionCode": "CALABARZON",
+      "cities": [
+        {
+          "code": "PH-LAG-CAL",
+          "name": "Calamba",
+          "barangays": [
+            { "code": "CAL001", "name": "Banadero" },
+            { "code": "CAL002", "name": "Banlic" },
+            { "code": "CAL003", "name": "Barandal" }
+          ]
+        },
+        {
+          "code": "PH-LAG-SPC",
+          "name": "San Pablo City",
+          "barangays": [
+            { "code": "SPC001", "name": "Atisan" },
+            { "code": "SPC002", "name": "Del Remedio" },
+            { "code": "SPC003", "name": "San Cristobal" }
+          ]
+        }
+      ]
+    }
+  ]

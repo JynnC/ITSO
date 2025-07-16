@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ITSO_icon.ico')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='user.css') }}">
+    <script src="{{ url_for('static', filename='user.js')}}"></script>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='ITSO_LOGO.png' )}}" alt="ITSO-RMS Logo" class="logo">
+        </div>
+        <div class="header-center">
+            <img src="{{ url_for('static', filename='search.png') }}" alt="Filter" class="filter-icon">
+            <input type="text" placeholder="  Search Documents" class="search-box">
+        </div>
+        <div class="header-right">
+            <div class="profile-dropdown">
+                <button class="profile-btn">
+                    <div class="profile-avatar" style="background-color: #1666BA; color: white">
+                        {{ profile.first_name[0] }}{{ profile.last_name[0] }}
+                    </div>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('user') }}">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+            <div class="user-info">
+                <p class="user-name">{{ full_name }}</p>
+                <p class="user-title">{{ user_role }}</p>
+            </div>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"> 
+                    <a href="{{ url_for('dashboard')}}">
+                        <img src="{{ url_for('static', filename='dashboard.png') }}" alt="Document Icon" class="nav-icon">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'encode' else '' }}">
+                    <a href="{{ url_for('encode')}}">
+                        <img src="{{ url_for('static', filename='encode.png') }}" alt="Encode Icon" class="nav-icon">
+                        IP Application
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'tables' else '' }}">
+                    <a href="{{ url_for('tables')}}">
+                        <img src="{{ url_for('static', filename='table.png') }}" alt="Tables Icon" class="nav-icon">
+                        Intellectual Property
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'report' else '' }}">
+                    <a href="{{ url_for('report')}}">
+                        <img src="{{ url_for('static', filename='report.png') }}" alt="Report Icon" class="nav-icon">
+                        IP Reports
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'user' else '' }}">
+                    <a href="{{ url_for('user')}}">
+                        <img src="{{ url_for('static', filename='user.png') }}" alt="User Icon" class="nav-icon">
+                        User Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    {% block content %}
+    <div class="main-content">
+        <h2>User Management</h2>
+
+        <div class="tab-container">
+            <div class="tab active" onclick="openTab('profile-tab')">Profile Info</div>
+            {% if user_role == 'Admin' %}
+            <div class="tab" onclick="openTab('manage-users-tab')">Manage Users</div>
+            {% endif %}
+        </div>
+
+        <div id="profile-tab" class="tab-content active">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-image">
+                        <img src="https://ui-avatars.com/api/?name={{ profile.first_name }}+{{ profile.last_name }}&background=1666BA&color=fff" alt="Profile Picture">
+                    </div>
+
+                    <div class="profile-name">
+                        <h3>{{ profile.first_name }} {{ profile.last_name }}</h3>
+                        <p class="user-role">{{ user_role }}</p>
+                        <p class="user-location">Laguna, Philippines</p>
+                        <button class="action-button">Active</button>
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <h3>Personal Information</h3>
+
+                    <form id="profile-form" method="POST" action="{{ url_for('update_profile') }}">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first_name">First Name</label>
+                                <input type="text" id="first_name" name="first_name" value="{{ profile.first_name}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" id="last_name" name="last_name" value="{{ profile.last_name}}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="{{ profile.email}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" id="phone" name="phone" value="{{ profile.phone}}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="position">Position</label>
+                                <input type="text" id="position" name="position" value="{{ profile.position }}"> 
+                            </div>
+                            <div class="form-group">
+                                <label for="department">Department</label>
+                                <input type="text" id="department" name="department" value="{{ profile.department }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="office_address">Office Address</label>
+                            <textarea id="office_address" name="office_address" rows="3">{{ profile.office_address}}</textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn">Cancel</button>
+                            <button type="submit" class="save-btn">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if user_role == 'Admin' %}
+        <div id="manage-users-tab" class="tab-content">
+            <div class="profile-container">
+                <h3>User List</h3>
+        
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Position</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in all_users %}
+                        <tr>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.position or 'None' }}</td>
+                            <td>{{ user.department or 'None' }}</td>
+                            <td>
+                                {% if user.status == 'Verified' %}
+                                    <span class="status-badge verified">{{ user.status }}</span>
+                                {% elif user.status == 'Pending' %}
+                                    <span class="status-badge pending">{{ user.status }}</span>
+                                {% elif user.status == 'Paused' %}
+                                    <span class="status-badge paused">{{ user.status }}</span>
+                                {% elif user.status == 'Deactivated' %}
+                                    <span class="status-badge deactivated">{{ user.status }}</span>
+                                {% else %}
+                                    <span class="status-badge">{{ user.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="action-buttons">
+                                {% if user.status == 'Pending' %}
+                                    <button class="action-icon verify-btn" data-user-id="{{ user.id }}" title="Verify User">
+                                        <img src="{{ url_for('static', filename='verify_icon.png') }}" alt="Verify" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' width=\'24\' height=\'24\'><path fill=\'%234CAF50\' d=\'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z\'/></svg>'">
+                                    </button>
+                                {% else %}
+                                    <button class="action-icon verified-btn" disabled title="User Verified">
+                                        <img src="{{ url_for('static', filename='verified_icon.png') }}" alt="Verified" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' width=\'24\' height=\'24\'><path fill=\'%234CAF50\' d=\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z\'/></svg>'">
+                                    </button>
+                                {% endif %}
+                                
+                                <div class="dropdown">
+                                    <button class="action-icon edit-btn" title="Edit User Options">
+                                        <img src="{{ url_for('static', filename='edit_icon.png') }}" alt="Edit" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' width=\'24\' height=\'24\'><path fill=\'%231666BA\' d=\'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z\'/></svg>'">
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        {% if user.status != 'Paused' %}
+                                        <a href="#" class="pause-user-action" data-user-id="{{ user.id }}">Pause</a>
+                                        {% else %}
+                                        <a href="#" class="reactivate-user-action" data-user-id="{{ user.id }}">Reactivate</a>
+                                        {% endif %}
+                                        <a href="#" class="delete-user-action" data-user-id="{{ user.id }}">Delete</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    {% endblock %}
+
+    <script>
+        function openTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content and mark its tab as active
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
