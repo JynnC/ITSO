@@ -1,16 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Initial chart data from the server (if available)
+
     const chartDataElement = document.getElementById('chart-data');
     let chartData = chartDataElement ? JSON.parse(chartDataElement.textContent) : {};
 
     if (!chartData || typeof chartData !== 'object') {
         console.log("No initial chart data, will fetch from API");
-        // Load initial data from API
+
         fetchReportData();
     } else {
         console.log('Using initial chart data from server');
         updateCharts(chartData);
-        // Also populate the table with any initial data
+
         if (chartData.tableData) {
             updateReportTable(chartData.tableData);
         }
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to update the report table with received data
+
     function updateReportTable(tableData) {
         const tableBody = document.querySelector('#reportTable tbody');
         tableBody.innerHTML = ''; // Clear existing rows
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to update all charts with the received data
+
     function updateCharts(chartData) {
         console.log("Raw API chart data:", chartData);
 
@@ -95,14 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
     
-        // Update Line Chart
+
         updateLineChart(finalChartData.lineChart);
         
-        // Update Pie Chart
+
         updatePieChart(finalChartData.pieChart);
     }
 
-    // Function to update line chart
+
     function updateLineChart(data) {
         const lineChartContext = document.getElementById('lineChart').getContext('2d');
         if (window.lineChart && window.lineChart.destroy) {
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to update pie chart
+
     function updatePieChart(data) {
         const pieChartContext = document.getElementById('pieChart').getContext('2d');
         if (window.pieChart && window.pieChart.destroy) {
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Function to reset all filters
+
     function resetFilters() {
         document.getElementById('startDate').value = '';
         document.getElementById('endDate').value = '';
@@ -201,11 +201,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function exportToWord() {
         console.log("Preparing Word document with charts");
         
-        // Capture charts as Base64 encoded PNGs
+
         const lineChartBase64 = document.getElementById('lineChart').toDataURL('image/png').split(',')[1];
         const pieChartBase64 = document.getElementById('pieChart').toDataURL('image/png').split(',')[1];
         
-        // Get table data
+
         const tableData = [];
         const tableRows = document.querySelectorAll('#reportTable tbody tr');
         tableRows.forEach(row => {
@@ -223,14 +223,14 @@ document.addEventListener("DOMContentLoaded", function () {
             tableData.push(rowData);
         });
         
-        // Prepare data to send to server
+
         const reportData = {
             lineChartImage: lineChartBase64,
             pieChartImage: pieChartBase64,
             tableData: tableData
         };
         
-        // Send data to server and get Word document in response
+
         fetch('/generate_word_report', {
             method: 'POST',
             headers: {
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.blob();
         })
         .then(blob => {
-            // Create download link
+
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             const date = new Date().toISOString().slice(0, 10);
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.appendChild(a);
             a.click();
             
-            // Cleanup
+
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
         })
@@ -272,7 +272,7 @@ function initProfileDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
 
     if (profileBtn && dropdownContent) {
-        // Hide dropdown initially
+
         dropdownContent.style.display = 'none';
         
         profileBtn.addEventListener('click', function(e) {
@@ -281,12 +281,12 @@ function initProfileDropdown() {
             dropdownContent.style.display = isVisible ? 'none' : 'block';
         });
 
-        // Close when clicking elsewhere
+
         document.addEventListener('click', function() {
             dropdownContent.style.display = 'none';
         });
 
-        // Keep dropdown open when clicking inside it
+
         dropdownContent.addEventListener('click', function(e) {
             e.stopPropagation();
         });

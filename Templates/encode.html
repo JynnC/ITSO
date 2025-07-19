@@ -690,7 +690,7 @@
                     </div>
 
                     <script>
-                        // Show/hide details fields based on radio button selection
+
                         document.querySelectorAll('input[name="biological-materials"]').forEach(radio => {
                             radio.addEventListener('change', function() {
                                 document.getElementById('biological-materials-details').style.display = 
@@ -740,8 +740,8 @@
                     </div>
 
                     <script>
-                        // Optional: Add functionality for signature box if needed
-                        // This could be expanded to include a signature pad library
+
+
                         document.querySelector('.signature-box').addEventListener('click', function() {
                             alert('A signature capture feature would be implemented here');
                         });
@@ -1352,7 +1352,7 @@
                     </div>
 
                     <script>
-                        // Show/hide details fields based on radio button selection
+
                         document.querySelectorAll('input[name="biological-materials"]').forEach(radio => {
                             radio.addEventListener('change', function() {
                                 document.getElementById('biological-materials-details').style.display = 
@@ -1402,8 +1402,8 @@
                     </div>
 
                     <script>
-                        // Optional: Add functionality for signature box if needed
-                        // This could be expanded to include a signature pad library
+
+
                         document.querySelector('.signature-box').addEventListener('click', function() {
                             alert('A signature capture feature would be implemented here');
                         });
@@ -1944,7 +1944,7 @@
                     </div>
 
                     <script>
-                        // Show/hide details fields based on radio button selection
+
                         document.querySelectorAll('input[name="biological-materials"]').forEach(radio => {
                             radio.addEventListener('change', function() {
                                 document.getElementById('biological-materials-details').style.display = 
@@ -1994,8 +1994,8 @@
                     </div>
 
                     <script>
-                        // Optional: Add functionality for signature box if needed
-                        // This could be expanded to include a signature pad library
+
+
                         document.querySelector('.signature-box').addEventListener('click', function() {
                             alert('A signature capture feature would be implemented here');
                         });
@@ -2409,7 +2409,7 @@
                             const trademarkForm = document.getElementById('trademark-form');
 
                             if (markImageInput && markBoxContent) {
-                                // Handle file selection change
+
                                 markImageInput.addEventListener('change', function(e) {
                                     const file = e.target.files[0];
                                     if (file) {
@@ -2420,7 +2420,7 @@
                                                 <button type="button" class="remove-image">Remove</button>
                                             `;
                                             
-                                            // Add click handler for remove button
+
                                             const removeBtn = markBoxContent.querySelector('.remove-image');
                                             if (removeBtn) {
                                                 removeBtn.addEventListener('click', function(e) {
@@ -2435,16 +2435,16 @@
                                     }
                                 });
                                 
-                                // Click to upload
+
                                 markBoxContent.addEventListener('click', function(e) {
-                                    // Only trigger file selection if we're not clicking on the remove button
+
                                     if (!e.target.classList.contains('remove-image')) {
                                         markImageInput.click();
                                     }
                                 });
                             }
 
-                            // Form submission validation
+
                             if (trademarkForm) {
                                 trademarkForm.addEventListener('submit', function(e) {
                                     if (markImageInput.files.length === 0) {
@@ -2452,7 +2452,7 @@
                                         alert('Please select a trademark image file');
                                         return false;
                                     }
-                                    // Let the form submit naturally with the file
+
                                     return true;
                                 });
                             }

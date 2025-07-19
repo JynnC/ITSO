@@ -1,25 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialize profile dropdown (from your existing code)
+
     initProfileDropdown();
     
-    // Tab switching functionality
+
     setupTabs();
     
-    // Patent form specific handlers
+
     setupPatentForm();
     
-    // Trademark form specific handlers
+
     setupTrademarkFileUpload();
     setupTrademarkForm();
     
-    // Copyright form specific handlers
+
     setupCopyrightForm();
     
-    // Form submission handler
+
     document.querySelector(".upload-document").addEventListener("click", submitActiveForm);
 });
 
-// Tab management
+
 function setupTabs() {
     const tabLinks = document.querySelectorAll('.tab-link');
     
@@ -33,29 +33,29 @@ function setupTabs() {
 }
 
 function openTab(evt, tabName) {
-    // Hide all tab contents
+
     const tabContents = document.getElementsByClassName('tab-content');
     for (let i = 0; i < tabContents.length; i++) {
         tabContents[i].classList.remove('active');
     }
 
-    // Remove active class from all tab links
+
     const tabLinks = document.getElementsByClassName('tab-link');
     for (let i = 0; i < tabLinks.length; i++) {
         tabLinks[i].classList.remove('active');
     }
 
-    // Show the current tab and add active class to the button
+
     document.getElementById(tabName).classList.add('active');
     evt.currentTarget.classList.add('active');
 }
 
-// Patent form handlers
+
 function setupPatentForm() {
     const patentForm = document.getElementById('patent-form');
     if (!patentForm) return;
     
-    // Patent type change handler
+
     const patentTypeSelect = document.getElementById('patent-type');
     if (patentTypeSelect) {
         patentTypeSelect.addEventListener('change', function() {
@@ -64,19 +64,19 @@ function setupPatentForm() {
         });
     }
     
-    // Applicant type change handler
+
     const applicantTypeSelect = document.getElementById('applicant-type');
     if (applicantTypeSelect) {
         applicantTypeSelect.addEventListener('change', function() {
             const companyNameField = document.getElementById('company-name-field');
             companyNameField.style.display = this.value !== 'individual' ? 'block' : 'none';
         });
-        // Initialize
+
         document.getElementById('company-name-field').style.display = 
             applicantTypeSelect.value !== 'individual' ? 'block' : 'none';
     }
     
-    // Applicant is inventor checkbox
+
     const applicantIsInventor = document.getElementById('applicant-is-inventor');
     if (applicantIsInventor) {
         applicantIsInventor.addEventListener('change', function() {
@@ -84,7 +84,7 @@ function setupPatentForm() {
             inventorSection.style.display = this.checked ? 'none' : 'block';
             
             if (this.checked) {
-                // Copy applicant info to inventor fields
+
                 const fieldsToCopy = [
                     'lastname', 'firstname', 'middlename', 'gender',
                     'address', 'town', 'province', 'zipcode',
@@ -110,12 +110,12 @@ document.getElementById('trademark-form').addEventListener('submit', function(e)
   return true;
 });
 
-// Trademark form handlers
+
 function setupTrademarkForm() {
     const tmForm = document.getElementById('trademark-form');
     if (!tmForm) return;
     
-    // Priority claim handler
+
     const priorityClaim = document.getElementById('tm-priority-claim');
     if (priorityClaim) {
         priorityClaim.addEventListener('change', function() {
@@ -124,7 +124,7 @@ function setupTrademarkForm() {
         });
     }
     
-    // Color claim handler
+
     const colorClaim = document.getElementById('tm-color-claim');
     if (colorClaim) {
         colorClaim.addEventListener('change', function() {
@@ -133,7 +133,7 @@ function setupTrademarkForm() {
         });
     }
     
-    // Disclaimer handler
+
     const disclaimer = document.getElementById('tm-disclaimer');
     if (disclaimer) {
         disclaimer.addEventListener('change', function() {
@@ -142,7 +142,7 @@ function setupTrademarkForm() {
         });
     }
     
-    // Translation handler
+
     const translation = document.getElementById('tm-translation');
     if (translation) {
         translation.addEventListener('change', function() {
@@ -158,7 +158,7 @@ function setupTrademarkFileUpload() {
 
     if (!markImageInput || !markBoxContent) return;
 
-    // Drag and drop functionality
+
     markBoxContent.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -180,12 +180,12 @@ function setupTrademarkFileUpload() {
         handleFileUpload(files[0]);
     });
 
-    // Click to upload
+
     markBoxContent.addEventListener('click', () => {
         markImageInput.click();
     });
 
-    // File input change event
+
     markImageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         handleFileUpload(file);
@@ -194,7 +194,7 @@ function setupTrademarkFileUpload() {
     function handleFileUpload(file) {
         if (!file) return;
 
-        // Validate file type and size
+
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
         const maxSize = 10 * 1024 * 1024;
 
@@ -208,20 +208,20 @@ function setupTrademarkFileUpload() {
             return;
         }
 
-        // Create file reader to display preview
+
         const reader = new FileReader();
         reader.onload = function(event) {
-            // Clear previous content
+
             markBoxContent.innerHTML = '';
             
-            // Create image preview
+
             const img = document.createElement('img');
             img.src = event.target.result;
             img.style.maxWidth = '100%';
             img.style.maxHeight = '200px';
             img.style.objectFit = 'contain';
             
-            // Create remove button (inside the box)
+
             const removeBtn = document.createElement('div');
             removeBtn.innerHTML = '&times;'; // × symbol
             removeBtn.style.position = 'absolute';
@@ -242,7 +242,7 @@ function setupTrademarkFileUpload() {
                 resetMarkBox();
             });
             
-            // Create container for image + button
+
             const previewContainer = document.createElement('div');
             previewContainer.style.position = 'relative';
             previewContainer.appendChild(img);
@@ -267,17 +267,17 @@ function setupTrademarkFileUpload() {
         markImageInput.value = '';
     }
 
-    // Initialize box
+
     resetMarkBox();
 }
 
 
-// Copyright form handlers
+
 function setupCopyrightForm() {
     const crForm = document.getElementById('copyright-form');
     if (!crForm) return;
     
-    // Author type handler
+
     const authorType = document.getElementById('cr-author-type');
     if (authorType) {
         authorType.addEventListener('change', function() {
@@ -289,7 +289,7 @@ function setupCopyrightForm() {
         });
     }
     
-    // Author is owner checkbox
+
     const authorIsOwner = document.getElementById('cr-author-is-owner');
     if (authorIsOwner) {
         authorIsOwner.addEventListener('change', function() {
@@ -298,7 +298,7 @@ function setupCopyrightForm() {
         });
     }
     
-    // Owner type handler
+
     const ownerType = document.getElementById('cr-owner-type');
     if (ownerType) {
         ownerType.addEventListener('change', function() {
@@ -308,7 +308,7 @@ function setupCopyrightForm() {
     }
 }
 
-// Profile dropdown (from your existing code)
+
 function initProfileDropdown() {
     const profileBtn = document.querySelector(".profile-btn");
     const dropdownContent = document.querySelector(".dropdown-content");
@@ -329,18 +329,18 @@ function initProfileDropdown() {
     }
 }
 
-// Form submission - submits the currently active form
+
 function submitActiveForm() {
     const activeForm = document.querySelector('.tab-content.active form');
     if (activeForm) {
-        // Validate form before submission
+
         if (validateForm(activeForm)) {
             activeForm.submit();
         }
     }
 }
 
-// Basic form validation
+
 function validateForm(form) {
     const requiredFields = form.querySelectorAll('[required]');
     let isValid = true;
@@ -350,7 +350,7 @@ function validateForm(form) {
             field.style.borderColor = 'red';
             isValid = false;
             
-            // Remove error highlight when user starts typing
+
             field.addEventListener('input', function() {
                 if (this.value.trim()) {
                     this.style.borderColor = '';

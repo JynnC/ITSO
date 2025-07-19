@@ -3,7 +3,7 @@ let documentsChartInstance = null;
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Script loaded!");
 
-    // Fetch data for the document encoding bar chart
+
     fetch('/chart-data')
         .then(response => response.json())
         .then(data => {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => console.error('Error fetching chart data:', error));
     
-    // We're going to need department data - let's implement a new endpoint
+
     fetch('/department-data')
         .then(response => response.json())
         .then(data => {
@@ -27,7 +27,7 @@ function initProfileDropdown() {
     const dropdownContent = document.querySelector('.dropdown-content');
 
     if (profileBtn && dropdownContent) {
-        // Hide dropdown initially
+
         dropdownContent.style.display = 'none';
         
         profileBtn.addEventListener('click', function(e) {
@@ -36,12 +36,12 @@ function initProfileDropdown() {
             dropdownContent.style.display = isVisible ? 'none' : 'block';
         });
 
-        // Close when clicking elsewhere
+
         document.addEventListener('click', function() {
             dropdownContent.style.display = 'none';
         });
 
-        // Keep dropdown open when clicking inside it
+
         dropdownContent.addEventListener('click', function(e) {
             e.stopPropagation();
         });
@@ -50,7 +50,7 @@ function initProfileDropdown() {
     }
 }
 
-// Create bar chart for Documents Encoded Per Month
+
 function createDocumentsChart(data) {
     const ctx = document.getElementById('documentsChart').getContext('2d');
 
@@ -94,7 +94,7 @@ function createDocumentsChart(data) {
     });
 }
 
-// Populate the department table with data
+
 function populateDepartmentTable(data) {
     const tableBody = document.querySelector('.department-table tbody');
     tableBody.innerHTML = '';
@@ -103,7 +103,7 @@ function populateDepartmentTable(data) {
         data.departments.forEach(dept => {
             const row = document.createElement('tr');
             
-            // Department name
+
             const nameCell = document.createElement('td');
             nameCell.textContent = dept.name;
             row.appendChild(nameCell);
@@ -112,12 +112,12 @@ function populateDepartmentTable(data) {
             
             categories.forEach(category => {
                 const cell = document.createElement('td');
-                // Use the counts directly from the data
+
                 cell.textContent = dept.counts[category] || 0;
                 row.appendChild(cell);
             });
             
-            // Total count
+
             const totalCell = document.createElement('td');
             totalCell.textContent = dept.total;
             row.appendChild(totalCell);

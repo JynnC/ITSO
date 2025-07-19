@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Flash Messages Section -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="flash-messages">
@@ -88,7 +87,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Password toggle functionality
+
             const toggleButtons = document.querySelectorAll('.toggle-password');
             
             toggleButtons.forEach(function(button) {
@@ -108,7 +107,7 @@
                 });
             });
             
-            // Modal functionality
+
             const modal = document.getElementById('resetPasswordModal');
             const forgotPasswordLink = document.getElementById('forgotPasswordLink');
             const closeModal = document.getElementById('closeModal');
@@ -129,14 +128,14 @@
                 hideModal();
             });
             
-            // Close modal when clicking outside
+
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     hideModal();
                 }
             });
             
-            // Prevent auto-hiding of flash messages
+
             const flashMessages = document.querySelectorAll('.flash-message');
             if (flashMessages.length > 0) {
                 setTimeout(function() {

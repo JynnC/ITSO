@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize password toggle functionality for both fields
+
     initPasswordToggle('password');
     initPasswordToggle('confirm-password');
     
-    // You can add other register-specific JavaScript here
+
 });
 
 function initPasswordToggle(fieldId) {

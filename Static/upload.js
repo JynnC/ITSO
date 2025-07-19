@@ -30,7 +30,7 @@ document.getElementById('add-more-file').addEventListener('click', function() {
 
     container.appendChild(newFileSet);
 
-    // Add file display functionality to the new file input
+
     const fileInput = newFileSet.querySelector('.file-input');
     fileInput.addEventListener('change', handleFileSelection);
 
@@ -42,7 +42,7 @@ document.getElementById('add-more-file').addEventListener('click', function() {
     initProfileDropdown();
 });
 
-// Function to handle file selection and display
+
 function handleFileSelection(e) {
     const fileDisplay = this.closest('.drag-drop').querySelector('.file-display');
     fileDisplay.innerHTML = ''; // Clear previous files
@@ -64,7 +64,7 @@ function handleFileSelection(e) {
     }
 }
 
-// Initialize file display for existing file inputs on page load
+
 document.addEventListener('DOMContentLoaded', function() {
     const fileInputs = document.querySelectorAll('.file-input');
     fileInputs.forEach(input => {

@@ -135,7 +135,7 @@ def forgot_password():
             db.close()
             return render_template('login.html')
         
-        # Add this try-except block around the token_expiry calculation
+
         try:
             print("About to calculate token expiry")
             token = secrets.token_urlsafe(32)
@@ -657,7 +657,7 @@ def statistics_data():
         user_department = user.get('department') or user.get('user_department')
         
         if is_admin:
-            # Admin sees all documents
+
             cursor.execute("""
                 SELECT category, COUNT(*) as count
                 FROM document_metadata
@@ -665,7 +665,7 @@ def statistics_data():
                 ORDER BY category
             """)
         else:
-            # Coordinators see only their department's documents
+
             cursor.execute("""
                 SELECT dm.category, COUNT(*) as count
                 FROM document_metadata dm
@@ -724,9 +724,9 @@ def department_data():
         is_admin = user['role'] == 'Admin'
         user_department = user.get('department') or user.get('user_department')
         
-        # Apply filter based on user role
+
         if is_admin:
-            # Admin sees all departments
+
             cursor.execute("""
                 SELECT 
                     CASE 
@@ -743,7 +743,7 @@ def department_data():
                 ORDER BY department_name
             """)
         else:
-            # Coordinators see only their department
+
             cursor.execute("""
                 SELECT 
                     CASE 
@@ -1329,13 +1329,13 @@ def encode_industrial_design():
         cursor = db.cursor(dictionary=True)
         user_id = session['user_id']
         
-        # Get user info
+
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
         full_name = user['full_name'] if user else 'User'
         department = user['department'] if user else None
 
-        # Get user profile
+
         cursor.execute("SELECT * FROM user_profiles WHERE user_id = %s", (user_id,))
         profile = cursor.fetchone()
 
@@ -1458,12 +1458,12 @@ def encode_trademark():
         full_name = user['full_name'] if user else 'User'
         department = user['department'] if user else None
 
-        # Get user profile
+
         cursor.execute("SELECT * FROM user_profiles WHERE user_id = %s", (user_id,))
         profile = cursor.fetchone()
 
         if not profile:
-            # Create default profile if not exists
+
             profile = {
                 'user_id': user_id,
                 'first_name': user.get('full_name', '').split(' ')[0] if user.get('full_name') else '',
@@ -1485,53 +1485,53 @@ def encode_trademark():
             db.commit()
 
         if request.method == 'POST':
-            # Debug logging for troubleshooting
+
             print("\n=== DEBUG START ===")
             print("Form data received:", request.form)
             print("Files received:", request.files)
             print("Files keys:", list(request.files.keys()))
             
-            # Extract trademark specific data from form
+
             mark_name = request.form.get('title-mark')
             
-            # Validate required fields
+
             if not mark_name:
                 flash('Trademark name is required', 'error')
                 return render_template('encode.html', profile=profile, full_name=full_name)
             
-            # Insert into documents table
+
             cursor.execute(
                 "INSERT INTO documents (title, type, author_id, department) VALUES (%s, %s, %s, %s)",
                 (mark_name, 'Trademark', user_id, department)
             )
             document_id = cursor.lastrowid
             
-            # Collect trademark metadata
+
             applicant_name = f"{request.form.get('applicant-lastname', '')}, {request.form.get('applicant-firstname', '')}"
             if request.form.get('applicant-middlename'):
                 applicant_name += f" {request.form.get('applicant-middlename')}"
             
-            # Handle trademark logo/image files if present
+
             file_path = None
-            # Fix 1: Change how we check for the file
+
             if 'mark-image' in request.files:
                 uploaded_file = request.files['mark-image']
                 
-                # Check if the file exists and has a name
+
                 if uploaded_file and uploaded_file.filename != '':
                     try:
                         print("\n=== FILE UPLOAD DEBUG ===")
                         print("Original filename:", uploaded_file.filename)
                         
-                        # Fix 2: Make sure the filename is secure
+
                         filename = secure_filename(uploaded_file.filename)
                         print("Secure filename:", filename)
                         
-                        # Fix 3: Create a unique filename
+
                         unique_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
                         print("Unique filename:", unique_filename)
                         
-                        # Fix 4: Ensure the upload directory exists
+
                         upload_folder = os.path.join(current_app.root_path, 'static', 'uploads', 'trademarks')
                         print("Upload folder path:", upload_folder)
                         
@@ -1541,17 +1541,17 @@ def encode_trademark():
                         save_path = os.path.join(upload_folder, unique_filename)
                         print("Full save path:", save_path)
                         
-                        # Fix 5: Save the file with proper error handling
+
                         uploaded_file.save(save_path)
                         print("File saved successfully")
                         
-                        # Verify file exists and has content
+
                         if os.path.exists(save_path):
                             print("File verification: EXISTS on disk")
                             file_size = os.path.getsize(save_path)
                             print(f"File size: {file_size} bytes")
                             
-                            # Fix 6: Only set file_path if file saved successfully
+
                             if file_size > 0:
                                 file_path = f"uploads/trademarks/{unique_filename}"
                                 print("File path to be stored in DB:", file_path)
@@ -1572,16 +1572,16 @@ def encode_trademark():
                 print("'mark-image' not found in request.files")
                 print("Available keys in request.files:", list(request.files.keys()))
 
-            # Insert metadata common to all documents
+
             submission_date = datetime.now().strftime('%Y-%m-%d')
             
-            # Add to document_metadata table
+
             cursor.execute(
                 "INSERT INTO document_metadata (document_id, category, authors, status, submission_date, file_path) VALUES (%s, %s, %s, %s, %s, %s)",
                 (document_id, 'Trademark', applicant_name, 'Pending', submission_date, file_path)
             )
             
-            # Update or create the trademark_metadata table
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS trademark_metadata (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -1598,7 +1598,7 @@ def encode_trademark():
                 )
             """)
             
-            # Store trademark-specific metadata
+
             applicant_address = request.form.get('applicant-address', '')
             goods_services = request.form.get('goods-services', '')
             business_type = request.form.get('business-type', '')
@@ -1617,7 +1617,7 @@ def encode_trademark():
                  mark_description, file_path)
             )
 
-            # Debug database insert
+
             print("\n=== DATABASE DEBUG ===")
             print("About to insert into trademark_metadata with these values:")
             print(f"document_id: {document_id}")
@@ -1632,7 +1632,7 @@ def encode_trademark():
             flash('Trademark application has been successfully registered', 'success')
             return redirect(url_for('tables'))
             
-        # For GET requests, just render the form
+
         return render_template('encode.html', profile=profile, full_name=full_name)
         
     except Exception as e:
@@ -1661,18 +1661,18 @@ def encode_copyright():
         cursor = db.cursor(dictionary=True)
         user_id = session['user_id']
         
-        # Get user info
+
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
         full_name = user['full_name'] if user else 'User'
         department = user['department'] if user else None
 
-        # Get user profile
+
         cursor.execute("SELECT * FROM user_profiles WHERE user_id = %s", (user_id,))
         profile = cursor.fetchone()
 
         if not profile:
-            # Create default profile if not exists
+
             profile = {
                 'user_id': user_id,
                 'first_name': user.get('full_name', '').split(' ')[0] if user.get('full_name') else '',
@@ -1694,27 +1694,27 @@ def encode_copyright():
             db.commit()
 
         if request.method == 'POST':
-            # Extract copyright specific data from form
+
             work_title = request.form.get('work-title')
             
-            # Validate required fields
+
             if not work_title:
                 flash('Work title is required', 'error')
                 return render_template('encode.html', profile=profile, full_name=full_name)
             
-            # Insert into documents table
+
             cursor.execute(
                 "INSERT INTO documents (title, type, author_id, department) VALUES (%s, %s, %s, %s)",
                 (work_title, 'Copyright', user_id, department)
             )
             document_id = cursor.lastrowid
             
-            # Collect copyright metadata
+
             author_name = f"{request.form.get('author-lastname', '')}, {request.form.get('author-firstname', '')}"
             if request.form.get('author-middlename'):
                 author_name += f" {request.form.get('author-middlename')}"
             
-            # Handle work sample files if present
+
             file_path = None
             if 'document_file' in request.files:
                 file = request.files['document_file']
@@ -1725,16 +1725,16 @@ def encode_copyright():
                     file_path = f"uploads/documents/{unique_filename}"
                     file.save(save_path)
             
-            # Insert metadata common to all documents
+
             submission_date = datetime.now().strftime('%Y-%m-%d')
             
-            # Add to document_metadata table
+
             cursor.execute(
                 "INSERT INTO document_metadata (document_id, category, authors, status, submission_date, file_path) VALUES (%s, %s, %s, %s, %s, %s)",
                 (document_id, 'Copyright', author_name, 'Pending', submission_date, file_path)
             )
             
-            # Create a new table for copyright-specific metadata if it doesn't exist yet
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS copyright_metadata (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -1750,7 +1750,7 @@ def encode_copyright():
                 )
             """)
             
-            # Store copyright-specific metadata
+
             work_type = request.form.get('work-type', '')
             creation_date = request.form.get('creation-date', '')
             first_publication_date = request.form.get('publication-date', '')
@@ -1758,7 +1758,7 @@ def encode_copyright():
             copyright_owner = request.form.get('copyright-owner', author_name) if not author_is_owner else author_name
             work_description = request.form.get('work-description', '')
             
-            # Convert date strings to proper format if they exist
+
             creation_date = datetime.strptime(creation_date, '%Y-%m-%d').date() if creation_date else None
             first_publication_date = datetime.strptime(first_publication_date, '%Y-%m-%d').date() if first_publication_date else None
             
@@ -1773,7 +1773,7 @@ def encode_copyright():
             flash('Copyright application has been successfully registered', 'success')
             return redirect(url_for('tables'))
             
-        # For GET requests, just render the form
+
         return render_template('encode.html', profile=profile, full_name=full_name)
         
     except Exception as e:
@@ -1829,13 +1829,13 @@ def standardize_department_name(department):
         'Teacher Ed': 'College of Teacher Education'
     }
     
-    # Look for an exact match in the keys (case-insensitive)
+
     normalized_dept = department.strip().upper()
     for abbr, full_name in department_mapping.items():
         if normalized_dept == abbr.upper():
             return full_name
     
-    # If no match found in the mapping, return the original department name
+
     return department
 
 @app.route('/submit_document', methods=['POST'])
@@ -1947,7 +1947,7 @@ def serve_document(filename):
     return send_from_directory(os.path.join(app.static_folder, 'documents'), filename)
     
 
-# Modified Flask route to properly fetch departments
+
 @app.route('/tables')
 def tables():
     if 'user_id' not in session:
@@ -1962,7 +1962,7 @@ def tables():
         cursor = db.cursor(dictionary=True)
         user_id = session['user_id']
 
-        # Get user info with role and department
+
         cursor.execute("""
             SELECT u.*, up.department as user_department 
             FROM users u
@@ -1976,7 +1976,7 @@ def tables():
         
         full_name = user['full_name'] if user else 'User'
 
-        # Get or create profile
+
         cursor.execute("SELECT * FROM user_profiles WHERE user_id = %s", (user_id,))
         profile = cursor.fetchone()
 
@@ -2003,12 +2003,12 @@ def tables():
 
         profile['profile_picture_url'] = url_for('static', filename=f'uploads/profile_pictures/{profile["profile_picture"]}') if profile.get('profile_picture') else url_for('static', filename='avatar.png')
 
-        # Filters
+
         status_filter = request.args.get('status', 'all')
         category_filter = request.args.get('category', 'all')
         department_filter = request.args.get('department', 'all')
         
-        # Base query
+
         base_query = """
             SELECT 
                 d.id, d.title, dm.category, dm.authors, dm.status, 
@@ -2019,7 +2019,7 @@ def tables():
         """
         params = []
         
-        # MODIFIED: Department filtering based on role with debugging
+
         user_department = user.get('department') or profile.get('user_department')
         print(f"DEBUG - User Role: {user['role']}, Department: {user_department}")
         
@@ -2028,11 +2028,11 @@ def tables():
             params.append(user_department)
             print(f"DEBUG - Applying department filter: {user_department}")
         else:
-            # If no department found but user is Coordinator, add debug info
+
             if user['role'] == 'Coordinator':
                 print("DEBUG - Coordinator has no department assigned!")
         
-        # Add existing filters
+
         if status_filter != 'all':
             base_query += " AND dm.status = %s"
             params.append(status_filter)
@@ -2047,7 +2047,7 @@ def tables():
         
         base_query += " ORDER BY d.id DESC"
         
-        # Print the final query and parameters for debugging
+
         print(f"DEBUG - Final Query: {base_query}")
         print(f"DEBUG - Parameters: {params}")
 
@@ -2055,19 +2055,19 @@ def tables():
         documents = cursor.fetchall()
         print(f"DEBUG - Query returned {len(documents)} documents")
         
-        # If no documents were found, check if ANY documents exist
+
         if not documents:
             cursor.execute("SELECT COUNT(*) as count FROM documents")
             total_docs = cursor.fetchone()['count']
             print(f"DEBUG - Total documents in database: {total_docs}")
             
             if total_docs > 0:
-                # Documents exist but none match the filter criteria
+
                 cursor.execute("SELECT COUNT(*) as count FROM documents d JOIN document_metadata dm ON d.id = dm.document_id")
                 joined_docs = cursor.fetchone()['count']
                 print(f"DEBUG - Total joined documents: {joined_docs}")
                 
-                # Examine a sample document to check departments
+
                 if joined_docs > 0:
                     cursor.execute("SELECT d.id, d.title, d.department FROM documents d LIMIT 5")
                     sample_docs = cursor.fetchall()
@@ -2078,12 +2078,12 @@ def tables():
         cursor.execute("SELECT DISTINCT category FROM document_metadata")
         categories = cursor.fetchall()
 
-        # Explicitly get all departments from the database
+
         cursor.execute("SELECT DISTINCT department FROM documents WHERE department IS NOT NULL AND department != ''")
         department_results = cursor.fetchall()
         departments = [dept['department'] for dept in department_results]
         
-        # Add debug log for departments
+
         print(f"DEBUG - Found departments: {departments}")
 
         return render_template('tables.html', 
@@ -2164,7 +2164,7 @@ def report():
     cursor = db.cursor(dictionary=True)
 
     try:
-        # Get user with role information
+
         cursor.execute("""
             SELECT u.*, up.first_name, up.last_name, up.email as profile_email, 
                    up.phone, up.position, up.institution, up.office_address, 
@@ -2179,7 +2179,7 @@ def report():
             flash('User not found', 'error')
             return redirect(url_for('login'))
 
-        # Create profile data structure
+
         profile = {
             'user_id': user_id,
             'first_name': user.get('first_name') or user.get('full_name', '').split(' ')[0],
@@ -2194,11 +2194,11 @@ def report():
             'department': user.get('profile_department') or user.get('department')
         }
 
-        # Get the effective role (check both tables)
+
         user_role = 'admin' if user.get('role', '').lower() == 'admin' or profile['role'] == 'admin' else 'coordinator'
         user_department = profile['department']
 
-        # Base query for report data
+
         base_query = """
             SELECT 
                 dm.category,
@@ -2213,7 +2213,7 @@ def report():
             GROUP BY dm.category
         """
 
-        # Apply department filter for coordinators
+
         department_filter = ""
         params = ()
 
@@ -2224,7 +2224,7 @@ def report():
         cursor.execute(base_query.format(department_filter=department_filter), params)
         categories_data = cursor.fetchall()
 
-        # Process categories data
+
         categories = []
         for cat in categories_data:
             total = cat['total_documents']
@@ -2286,7 +2286,7 @@ def filter_data():
     cursor = db.cursor(dictionary=True)
 
     try:
-        # Get user's role and department
+
         cursor.execute("""
             SELECT u.role, COALESCE(up.department, u.department) as department
             FROM users u
@@ -2301,7 +2301,7 @@ def filter_data():
         user_role = user_info['role'].lower()
         user_department = user_info['department']
 
-        # Base query with filters
+
         base_query = """
             SELECT 
                 dm.category,
@@ -2317,7 +2317,7 @@ def filter_data():
 
         params = []
         
-        # Apply department filter for coordinators
+
         if user_role == 'coordinator' and user_department:
             base_query += " AND dm.department = %s"
             params.append(user_department)
@@ -2325,7 +2325,7 @@ def filter_data():
             base_query += " AND dm.department = %s"
             params.append(data['department'])
 
-        # Add other filters
+
         if data.get('startDate'):
             base_query += " AND dm.created_at >= %s"
             params.append(data['startDate'])
@@ -2344,7 +2344,7 @@ def filter_data():
         cursor.execute(base_query, params)
         categories_data = cursor.fetchall()
 
-        # Process data
+
         categories = []
         for cat in categories_data:
             total = cat['total_documents']
@@ -2423,11 +2423,11 @@ def generate_word_report():
     if 'user_id' not in session:
         return jsonify({"error": "Not logged in"}), 401
     
-    # Add detailed logging
+
     print("Starting Word report generation process")
     
     try:
-        # Import required libraries with error checking
+
         try:
             from docx import Document
             from docx.shared import Inches
@@ -2438,7 +2438,7 @@ def generate_word_report():
             print(f"Error importing libraries: {str(e)}")
             return jsonify({"error": "Missing required libraries. Please install python-docx."}), 500
         
-        # Process request data (for POST)
+
         chart_data = None
         table_data = None
         
@@ -2461,7 +2461,7 @@ def generate_word_report():
                 print(f"Error processing JSON data: {str(json_error)}")
                 return jsonify({"error": "Invalid JSON data"}), 400
         
-        # Use database if no POST data provided
+
         if not table_data:
             try:
                 db = get_db_connection()
@@ -2470,17 +2470,17 @@ def generate_word_report():
                     return jsonify({"error": "Database connection failed"}), 500
                 print("Successfully connected to database")
                 
-                # Create cursor
+
                 cursor = db.cursor(dictionary=True)
                 print("Database cursor created")
                 
-                # Get user information
+
                 user_id = session.get('user_id')
                 user_role = session.get('role', 'coordinator')
                 user_department = session.get('department')
                 print(f"User info - ID: {user_id}, Role: {user_role}, Department: {user_department}")
                 
-                # Build query
+
                 base_query = """
                     SELECT 
                         dm.category,
@@ -2502,18 +2502,18 @@ def generate_word_report():
                     department_filter = "WHERE d.department = %s"
                     params = (user_department,)
                     
-                # Execute query
+
                 print(f"Executing query with params: {params}")
                 cursor.execute(base_query.format(department_filter=department_filter), params)
                 table_data = cursor.fetchall()
                 print(f"Query successful, retrieved {len(table_data)} category records")
                 
-                # Check if we have data
+
                 if not table_data:
                     print("No data retrieved from database")
                     return jsonify({"error": "No report data available"}), 404
                     
-                # Process data for approval and rejection rates
+
                 for cat in table_data:
                     total = cat['total_documents']
                     approved = cat['approved']
@@ -2536,12 +2536,12 @@ def generate_word_report():
                     print("Closing database connection")
                     db.close()
         
-        # Create Word document
+
         try:
             print("Creating Word document")
             doc = Document()
             
-            # IMPORTANT: Set document properties to prevent Protected View
+
             core_properties = doc.core_properties
             core_properties.title = 'Intellectual Property Report'
             core_properties.category = 'Reports'
@@ -2552,7 +2552,7 @@ def generate_word_report():
             from datetime import datetime
             doc.add_paragraph(f'Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
             
-            # Add table headers
+
             print("Adding table to document")
             table = doc.add_table(rows=1, cols=10)
             table.style = 'Table Grid'
@@ -2564,12 +2564,12 @@ def generate_word_report():
             for i, header in enumerate(headers):
                 header_cells[i].text = header
             
-            # Add data rows
+
             print("Populating table with data")
             for cat in table_data:
                 row_cells = table.add_row().cells
                 
-                # Handle different possible formats of data
+
                 if isinstance(cat, dict):
                     row_cells[0].text = str(cat.get('category', ''))
                     row_cells[1].text = str(cat.get('total_documents', 0))
@@ -2582,25 +2582,25 @@ def generate_word_report():
                     row_cells[8].text = str(cat.get('avg_processing_time_a', "N/A"))
                     row_cells[9].text = str(cat.get('avg_processing_time_r', "N/A"))
             
-            # Add charts if provided
+
             if chart_data:
                 doc.add_heading('Charts', level=1)
                 
-                # Add line chart
+
                 if chart_data.get('line'):
                     doc.add_heading('Average Approval and Rejection Rate', level=2)
                     line_image_data = base64.b64decode(chart_data['line'])
                     line_image_stream = BytesIO(line_image_data)
                     doc.add_picture(line_image_stream, width=Inches(6))
                 
-                # Add pie chart
+
                 if chart_data.get('pie'):
                     doc.add_heading('Document Status Distribution', level=2)
                     pie_image_data = base64.b64decode(chart_data['pie'])
                     pie_image_stream = BytesIO(pie_image_data)
                     doc.add_picture(pie_image_stream, width=Inches(5))
                 
-                # Add bar chart
+
                 if chart_data.get('bar'):
                     doc.add_heading('Comparison of Status by Category', level=2)
                     bar_image_data = base64.b64decode(chart_data['bar'])
@@ -2610,10 +2610,10 @@ def generate_word_report():
                 doc.add_heading('Charts', level=1)
                 doc.add_paragraph('For detailed charts, please refer to the online dashboard.')
             
-            # Add a note that the document is editable
+
             doc.add_paragraph().add_run('\nThis document is fully editable.').bold = True
             
-            # Save to a BytesIO object
+
             print("Saving document to memory")
             output = BytesIO()
             doc.save(output)
@@ -2621,7 +2621,7 @@ def generate_word_report():
             
             print("Successfully generated Word report")
             
-            # Return as a downloadable file with content disposition that may prevent Protected View
+
             response = send_file(
                 output,
                 mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -2629,7 +2629,7 @@ def generate_word_report():
                 download_name=f'ip_report_{datetime.now().strftime("%Y%m%d")}.docx'
             )
             
-            # Add headers that might help avoid Protected View
+
             response.headers['X-Content-Type-Options'] = 'nosniff'
             response.headers['Content-Security-Policy'] = "default-src 'self'"
             
@@ -2656,7 +2656,7 @@ def verify_user():
         if not user_id:
             return jsonify({'success': False, 'message': 'User ID missing'}), 400
 
-        # Get the current logged-in user's ID (the one performing the verification)
+
         current_user_id = session.get('user_id')
         if not current_user_id:
             return jsonify({'success': False, 'message': 'You must be logged in to verify users'}), 401
@@ -2664,28 +2664,28 @@ def verify_user():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Update is_verified flag in users table
+
         if department:
-            # If department is provided, update it along with verification status
+
             cursor.execute("UPDATE users SET is_verified = 1, department = %s WHERE id = %s", 
                          (department, user_id))
         else:
-            # Otherwise just update verification status
+
             cursor.execute("UPDATE users SET is_verified = 1 WHERE id = %s", (user_id,))
         
-        # First check if a record already exists
+
         cursor.execute("SELECT * FROM user_management WHERE user_id = %s", (user_id,))
         existing_record = cursor.fetchone()
         
         if existing_record:
-            # Update the existing record
+
             cursor.execute("""
                 UPDATE user_management 
                 SET status = 'Verified' 
                 WHERE user_id = %s
             """, (user_id,))
         else:
-            # Insert a new record with the created_by field
+
             cursor.execute("""
                 INSERT INTO user_management (user_id, status, created_by) 
                 VALUES (%s, 'Verified', %s)
@@ -2721,7 +2721,7 @@ def user():
         cursor = db.cursor(dictionary=True)
         user_id = session['user_id']
 
-        # Get current user's profile
+
         cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))
         user = cursor.fetchone()
         full_name = user['full_name'] if user else 'User'
@@ -2732,7 +2732,7 @@ def user():
         profile = cursor.fetchone()
 
         if not profile:
-            # Create default profile if it doesn't exist
+
             profile = {
                 'user_id': user_id,
                 'first_name': user.get('full_name', '').split(' ')[0] if user.get('full_name') else '',
@@ -2754,13 +2754,13 @@ def user():
             )
             db.commit()
         else:
-            # Make sure to update the department from the users table
+
             profile['department'] = user.get('department', '')
             
-        # Only fetch all users if the current user is an Admin
+
         all_users = []
         if user_role == 'Admin':
-            # JOIN with user_management table to get the current status
+
             cursor.execute("""
                 SELECT 
                     u.id, 
@@ -2777,7 +2777,7 @@ def user():
             """)
             all_users = cursor.fetchall()
             
-            # Transform database status to display status
+
             for u in all_users:
                 if u['user_status'] == 'suspended':
                     u['status'] = 'Paused'
@@ -2786,7 +2786,7 @@ def user():
                 else:
                     u['status'] = 'Pending'
                 
-                # Ensure department is never NULL in the frontend display
+
                 if u['department'] is None:
                     u['department'] = 'None'
 
@@ -2795,7 +2795,7 @@ def user():
         else:
             profile['profile_picture_url'] = url_for('static', filename='avatar.png')
 
-        # Pass user_role to the template for permission-based UI rendering
+
         return render_template('user.html', 
                               profile=profile, 
                               full_name=full_name, 
@@ -2831,15 +2831,15 @@ def pause_user():
     cursor = db.cursor()
     
     try:
-        # Check if user exists in users table first
+
         cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
         if not cursor.fetchone():
             return jsonify({'success': False, 'message': 'User not found'}), 404
         
-        # Check if record exists in user_management
+
         cursor.execute("SELECT id FROM user_management WHERE user_id = %s", (user_id,))
         if cursor.fetchone():
-            # Update existing record
+
             cursor.execute("""
                 UPDATE user_management 
                 SET status = 'suspended', 
@@ -2847,7 +2847,7 @@ def pause_user():
                 WHERE user_id = %s
             """, (user_id,))
         else:
-            # Create new record
+
             cursor.execute("""
                 INSERT INTO user_management 
                 (user_id, status, created_by) 
@@ -2856,7 +2856,7 @@ def pause_user():
         
         db.commit()
         
-        # Verify the update
+
         cursor.execute("SELECT status FROM user_management WHERE user_id = %s", (user_id,))
         result = cursor.fetchone()
         
@@ -2890,13 +2890,13 @@ def delete_user():
     try:
         cursor = db.cursor()
         
-        # First delete from user_profiles table (which has the foreign key constraint)
+
         cursor.execute("DELETE FROM user_profiles WHERE user_id = %s", (user_id,))
         
-        # Then delete from user_management table
+
         cursor.execute("DELETE FROM user_management WHERE user_id = %s", (user_id,))
         
-        # Finally delete from users table
+
         cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
         
         db.commit()
@@ -2934,32 +2934,32 @@ def reactivate_user():
     cursor = db.cursor()
     
     try:
-        # Check if user exists
+
         cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
         if not cursor.fetchone():
             return jsonify({'success': False, 'message': 'User not found'}), 404
         
-        # Check if there's an existing record in user_management
+
         cursor.execute("SELECT id, status FROM user_management WHERE user_id = %s", (user_id,))
         management_record = cursor.fetchone()
         
         if management_record:
-            # Update existing record - set status to active
-            # updated_at will be updated automatically due to ON UPDATE CURRENT_TIMESTAMP
+
+
             cursor.execute("""
                 UPDATE user_management 
                 SET status = 'active'
                 WHERE user_id = %s
             """, (user_id,))
         else:
-            # Create new record - must include created_by since it's NOT NULL
+
             cursor.execute("""
                 INSERT INTO user_management 
                 (user_id, status, created_by) 
                 VALUES (%s, 'active', %s)
             """, (user_id, admin_id))
         
-        # Also update the is_verified status in the users table if it exists
+
         cursor.execute("""
             UPDATE users
             SET is_verified = 1
@@ -2987,7 +2987,7 @@ def edit_user():
         return jsonify({'success': False, 'message': 'Missing user_id parameter'}), 400
     
     user_id = data['user_id']
-    # These are the fields you might want to update
+
     full_name = data.get('full_name')
     email = data.get('email')
     department = data.get('department')
@@ -3000,7 +3000,7 @@ def edit_user():
     try:
         cursor = db.cursor()
         
-        # Build the update query dynamically based on provided fields
+
         update_fields = []
         update_values = []
         
@@ -3023,10 +3023,10 @@ def edit_user():
         if not update_fields:
             return jsonify({'success': False, 'message': 'No fields to update'}), 400
         
-        # Complete the update values with the user_id
+
         update_values.append(user_id)
         
-        # Execute the update query
+
         query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = %s"
         cursor.execute(query, tuple(update_values))
         db.commit()
@@ -3066,7 +3066,7 @@ def update_profile():
         department = request.form.get('department', '')
         office_address = request.form.get('office_address', '')
 
-        # Update user_profiles table
+
         cursor.execute("""
             UPDATE user_profiles SET 
                 first_name = %s,
@@ -3079,7 +3079,7 @@ def update_profile():
             WHERE user_id = %s
         """, (first_name, last_name, email, phone, position, department, office_address, user_id))
         
-        # Update users table with email, full_name AND department
+
         cursor.execute("UPDATE users SET email = %s, department = %s WHERE id = %s", 
                       (email, department, user_id))
 
@@ -3192,7 +3192,7 @@ def log_activity(user_id, activity, department=None):
             print("Failed to log activity: Database Connection Failed")
             return False
         
-        # If department is not provided, retrieve it from the user's record
+
         if department is None:
             cursor = conn.cursor(dictionary=True)
             cursor.execute("SELECT department FROM users WHERE id = %s", (user_id,))
@@ -3228,14 +3228,14 @@ def get_recent_activities(user_id, limit=20):
         
         cursor = conn.cursor(dictionary=True)
         
-        # First get the user's role and department
+
         cursor.execute("SELECT role, department FROM users WHERE id = %s", (user_id,))
         user_data = cursor.fetchone()
         
         if not user_data:
             return []
         
-        # If user is Admin, show all activities
+
         if user_data['role'] == 'Admin':
             cursor.execute("""
                 SELECT al.id, al.activity, al.department, al.timestamp, u.full_name 
@@ -3244,7 +3244,7 @@ def get_recent_activities(user_id, limit=20):
                 ORDER BY al.timestamp DESC
                 LIMIT %s
             """, (limit,))
-        # If user is Coordinator, show only department activities
+
         elif user_data['role'] == 'Coordinator' and user_data['department']:
             cursor.execute("""
                 SELECT al.id, al.activity, al.department, al.timestamp, u.full_name 
@@ -3304,10 +3304,10 @@ def update_document(document_id):
         return jsonify({"success": False, "error": "Database connection failed"}), 500
     
     try:
-        # Get JSON data from the request
+
         data = request.json
         
-        # Extract values from the data
+
         title = data.get('title')
         category = data.get('category')
         authors = data.get('authors')
@@ -3317,14 +3317,14 @@ def update_document(document_id):
         
         cursor = db.cursor()
         
-        # Update documents table (assuming type is not editable via modal)
+
         cursor.execute("""
             UPDATE documents 
             SET title = %s
             WHERE id = %s
         """, (title, document_id))
         
-        # Update document_metadata table
+
         cursor.execute("""
             UPDATE document_metadata 
             SET category = %s, authors = %s, status = %s, 
@@ -3334,7 +3334,7 @@ def update_document(document_id):
         
         db.commit()
         
-        # Log the activity
+
         log_activity(session['user_id'], f"Edited document ID: {document_id}")
         
         return jsonify({"success": True})
@@ -3365,13 +3365,13 @@ def view_document(document_id):
     user_id = session['user_id']
 
     try:
-        # Get user basic info
+
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
 
         full_name = user['full_name'] if user else 'User'
 
-        # Get or create user profile
+
         cursor.execute("SELECT * FROM user_profiles WHERE user_id = %s", (user_id,))
         profile = cursor.fetchone()
 
@@ -3398,7 +3398,7 @@ def view_document(document_id):
 
         profile['profile_picture_url'] = url_for('static', filename=f'uploads/profile_pictures/{profile["profile_picture"]}') if profile.get('profile_picture') else url_for('static', filename='avatar.png')
 
-        # Fetch the document and metadata
+
         cursor.execute("""
             SELECT d.id, d.title, d.type, 
                 dm.category, dm.authors, dm.status, 
@@ -3411,7 +3411,7 @@ def view_document(document_id):
 
         document = cursor.fetchone()  # First fetch the document
 
-        # Then add the logging after you have the document
+
         if document and document.get('file_path'):
             app.logger.info(f"Document ID: {document_id}")
             app.logger.info(f"File path from DB: {document['file_path']}")
@@ -3452,7 +3452,7 @@ def edit_document(document_id):
         cursor = db.cursor(dictionary=True)
         
         if request.method == 'POST':
-            # Get form data
+
             title = request.form.get('title')
             category = request.form.get('category')
             authors = request.form.get('authors')
@@ -3461,14 +3461,14 @@ def edit_document(document_id):
             expiration_date = request.form.get('expiration_date')
             doc_type = request.form.get('type')
             
-            # Update documents table
+
             cursor.execute("""
                 UPDATE documents 
                 SET title = %s, type = %s
                 WHERE id = %s
             """, (title, doc_type, document_id))
             
-            # Update document_metadata table
+
             cursor.execute("""
                 UPDATE document_metadata 
                 SET category = %s, authors = %s, status = %s, 
@@ -3483,7 +3483,7 @@ def edit_document(document_id):
             flash('Document updated successfully', 'success')
             return redirect(url_for('tables'))
         
-        # Get document data for the form
+
         cursor.execute("""
             SELECT d.id, d.title, d.type, 
                    dm.category, dm.authors, dm.status, 
@@ -3499,13 +3499,13 @@ def edit_document(document_id):
             flash('Document not found', 'error')
             return redirect(url_for('tables'))
         
-        # Format dates for the form
+
         if document['submission_date']:
             document['submission_date'] = document['submission_date'].strftime('%Y-%m-%d')
         if document['expiration_date']:
             document['expiration_date'] = document['expiration_date'].strftime('%Y-%m-%d')
         
-        # Get user name for display
+
         user_id = session['user_id']
         cursor.execute("SELECT full_name FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
@@ -3665,7 +3665,7 @@ def activity_logs():
     try:
         cursor = db.cursor(dictionary=True)
         
-        # Get all activity logs or filter as needed
+
         cursor.execute("""
             SELECT al.id, al.timestamp, al.activity, u.full_name as user_name
             FROM activity_logs al
